@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translator</title>
+</head>
+<style>
+    #contain{
+        width:900px;
+        margin:auto;
+        text-align: center;
+        display: flex;
+        gap:20%;
+        margin-left: 21%;
+        margin-top:5%;
+    }
+    #one{
+      width:300px;
+      height: 200px;
+    }
+    #one>p>input{
+        width:97%;
+        height:30px;
+        padding-bottom:130px;
+        text-align: center;
+    }
+    #two{
+      width:300px;
+      height: 200px;
+    }
+    #two:hover{
+        border:2px solid black;
+    }
+    #two>p>div{
+        width:97%;
+        height:150px;
+        text-align: center;
+        border:1px solid black;        
+    } 
+    #one:hover{
+        border:2px solid black;
+    }    
+    #right1{
+        font-size:30px;
+        font-weight: bold;
+        font-style: italic;
+    }
+    #sbmt{
+        border:1px solid black;
+        width:100px;
+        height:30px;
+        font-size: medium;
+        border-radius: 6px;
+        margin-left: 45%;
+    }
+  
+    #mic{
+        border:1px solid black;
+        width:30px;
+        height:30px;
+        border-radius: 16px;
+        margin-left: 1%;               
+    }
+    .material-icons{
+       margin-left:-22%;
+       margin-top: 5%;
+    }
+    button:hover{
+     background-color: gray;
+    }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> 
+
+<body>  
+<h2 style="text-align: center;">Translator</h2>    
+<div id="contain">  
+
+<div id="one">   
+<label >Choose a Language:</label>
+<select id="lang">
+  <option >English</option>
+  <option >Arabic</option>
+  <option >Chinese</option>
+  <option >French</option>
+  <option >German</option>
+  <option >Hindi</option>
+  <option >Indonesian</option>
+  <option >Irish</option>  
+  <option >Italian</option>
+  <option >Japanese</option>
+  <option >Korean</option>
+  <option >Polish</option>
+  <option >Portuguese</option>
+  <option >Russian</option>
+  <option >Spanish</option>
+  <option >Turkish</option>
+  <option >Vietnamese</option>      
+</select>  
+<p id=left>
+    <input id="left1" type="text"></input>
+</p>
+</div> 
+
+<div id="two">   
+    <label >Choose a Language:</label>
+    <select id="lang2">
+      <option >English</option>
+      <option >Arabic</option>
+      <option >Chinese</option>
+      <option >French</option>
+      <option >German</option>
+      <option >Hindi</option>
+      <option >Indonesian</option>
+      <option >Irish</option>  
+      <option >Italian</option>
+      <option >Japanese</option>
+      <option >Korean</option>
+      <option >Polish</option>
+      <option >Portuguese</option>
+      <option >Russian</option>
+      <option >Spanish</option>
+      <option >Turkish</option>
+      <option >Vietnamese</option>      
+    </select>  
+    <p id=right>
+        <div id="right1"></div>
+    </p>
+</div> 
+
+</div>
+<button id="sbmt" onclick="sub()">Submit</button>
+<button id="mic" onclick="runSpeechRecognition()"><i class="material-icons">mic</i></button>
+<script> 
+
+var lang=document.getElementById("lang"); 
+var lang2=document.getElementById("lang2"); 
+var left1=document.getElementById("left1");
+var right1=document.getElementById("right1");
+
+
+// to get the library of languages containing language code and language name.
+async function decide(){
+    let res= await fetch("https://libretranslate.de/languages");
+   
+    let data=await res.json();
+
+    return data;
+}
+
+
+// to translate the language after detection
+async function sub(){
+let a= await decide();
+let b=findLang(a,lang);
+
+let c= await decide();
+let d=findLang(c,lang2);
+
+    let res2 = await fetch("https://libretranslate.de/translate", {
+	method: "POST",
+	body: JSON.stringify({
+		q: `${left1.value}`,
+		source: `${b}`,
+		target: `${d}`
+	}),
+	headers: { "Content-Type": "application/json" }
+});      
+    let data2=await res2.json();
+    right1.innerText=data2.translatedText;
+    //console.log(data2);
+}
+
+
+// to find language code
+function findLang(A,l){//forEach NOPE,NOT AT ALL
+    for(var i=0;i<A.length;i++){
+        if(A[i].name==l.value){
+        return A[i].code;
+        }
+    }   
+}
+
+
+//Speech Part added by internet(Not written by me)
+
+function runSpeechRecognition() {
+    var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+    var recognition = new SpeechRecognition();
+
+    // This runs when the speech recognition service returns result
+    recognition.onresult = function(event) {
+        var transcript = event.results[0][0].transcript;
+        var confidence = event.results[0][0].confidence;
+        left1.value =transcript; 
+
+    };
+  
+     // start recognition
+     recognition.start();
+	}
+</script>
+
+</body>
+</html>
